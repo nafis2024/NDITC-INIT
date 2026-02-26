@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ImageContainer from "@/components/Admin/Gallery/ImageContainer";
 import AddPhotosForm from "@/components/Admin/Gallery/AddPhotosForm";
-import EditPhotoForm from "@/components/Admin/Gallery/EditPhotoFor";
+import EditPhotoForm from "@/components/Admin/Gallery/EditPhotoForm";
 import ModalOverlay from "@/components/ui/ModalOverlay";
 import ImageContext from "@/context/StateContext";
 import reqs from "@/api/requests";

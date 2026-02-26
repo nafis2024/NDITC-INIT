@@ -6,6 +6,7 @@ import React, { useContext } from "react";
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import { toast } from "react-toastify";
+
 interface ImageCardProps {
   image: any;
 }
@@ -18,7 +19,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
       <div className="group relative h-full w-full">
         <img
           src={reqImgWrapper(image?.BigImage) || ""}
-          alt=""
+          alt="Gallery"
           className="h-full w-full object-cover"
         />
         <div className="pointer-events-none absolute right-2 top-2 z-10 flex items-center gap-2 opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100">
@@ -27,9 +28,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
             onClick={() => {
               dispatch({ type: "EDIT", state: true, data: image });
             }}
-            className="pointer-events-auto"
+            className="pointer-events-auto bg-secondary-600 p-2 rounded-full hover:bg-secondary-700 transition-colors"
           >
-            <FiEdit className="text-1xl" />
+            <FiEdit className="text-xl text-white" />
           </button>
           <button
             onClick={() => {
@@ -56,9 +57,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
                 },
               );
             }}
-            className="pointer-events-auto"
+            className="pointer-events-auto bg-red-600 p-2 rounded-full hover:bg-red-700 transition-colors"
           >
-            <MdDelete className="text-2xl text-red-600" />
+            <MdDelete className="text-xl text-white" />
           </button>
         </div>
       </div>

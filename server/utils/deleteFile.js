@@ -1,11 +1,15 @@
-const { existsSync, unlinkSync } = require('fs')
-const { resolve } = require('path')
+// /workspaces/NDITC-INIT/server/utils/deleteFile.js
+const fs = require('fs');
 
-const deleteFile = (path) => {
-  const destName = resolve(__dirname, '../', path)
-  if (existsSync(destName)) {
-    unlinkSync(destName)
+const deleteFile = (filePath) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log('File deleted successfully:', filePath);
+    }
+  } catch (error) {
+    console.error('Error deleting file:', error);
   }
-}
+};
 
-module.exports = deleteFile
+module.exports = deleteFile;

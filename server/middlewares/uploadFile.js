@@ -2,115 +2,81 @@ const multer = require('multer');
 const { existsSync, mkdirSync } = require('fs');
 const { resolve } = require('path');
 const { BadRequestError } = require('../errors');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('cloudinary').v2;
-//file upload
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     const validFields = /participants|CA|banner|gallery|thumbnail|event|sponsor/;
-//     const isFieldValid = validFields.test(file.fieldname);
-//     if (!isFieldValid) {
-//       cb(new Error(`Field name didn't match`));
-//     }
-//     let destName = resolve(__dirname, `../uploads/${file.fieldname}`);
 
-//     if (!existsSync(destName)) {
-//       try {
-//         mkdirSync(destName, { recursive: true });
-//       } catch (error) {
-//         // cmnt
-//       }
-//     }
-//     const pathName = `uploads/${file.fieldname}`;
-//     cb(null, pathName);
-//   },
-//   filename: (req, file, cb) => {
-//     let type = file.mimetype.split('/');
-//     const fileExt = type[type.length - 1];
+// Local storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const validFields = /participants|CA|banner|gallery|thumbnail|event|sponsor/;
+    const isFieldValid = validFields.test(file.fieldname);
+    
+    if (!isFieldValid) {
+      return cb(new Error(`Field name didn't match`));
+    }
+    
+    // Create dynamic destination path based on fieldname
+    let destName = resolve(__dirname, `../public/uploads/${file.fieldname}`);
 
-//     let fileName = '';
-//     if (file.fieldname === 'banner') {
-//       fileName = 'eventBanner' + `@${Date.now()}`;
-//     } else if (file.fieldname === 'participants' || file.fieldname === 'CA') {
-//       let { fullName, name } = req.body;
-
-//       if (fullName) {
-//         fullName = fullName.trim();
-//         fileName = fullName.split(' ')[0].toLowerCase() + `@${Date.now()}`;
-//         req.userName = fileName;
-//       } else if (name) {
-//         fileName = name;
-//       } else {
-//         cb(new BadRequestError('fullName should be provided'));
-//       }
-//     } else if (file.fieldname === 'event') {
-//       fileName = req.body.name.split(' ').join('') + `@${Date.now()}`;
-//     } else {
-//       fileName = file.fieldname + `-${Date.now()}`;
-//     }
-//     cb(null, fileName + '.' + fileExt);
-//   },
-// });
-
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: (req, file) => {
-      return `init/uploads/${file.fieldname}/`;
-    },
-    public_id: (req, file) => {
-      let type = file.mimetype.split('/');
-      const fileExt = type[type.length - 1];
-
-      let fileName = '';
-      if (file.fieldname === 'banner') {
-        fileName = 'eventBanner' + `@${Date.now()}`;
-      } else if (file.fieldname === 'participants' || file.fieldname === 'CA') {
-        let { fullName, name } = req.body;
-
-        if (fullName) {
-          // cmnt
-          fullName = fullName.trim();
-          fileName = fullName.split(' ')[0].toLowerCase() + `@${Date.now()}`;
-          req.userName = fileName;
-        } else if (name) {
-          fileName = name;
-        } else {
-          cb(new BadRequestError('fullName should be provided'));
-        }
-      } else if (file.fieldname === 'event') {
-        fileName = req.body.name.split(' ').join('') + `@${Date.now()}`;
-      } else {
-        fileName = file.fieldname + `-${Date.now()}`;
+    if (!existsSync(destName)) {
+      try {
+        mkdirSync(destName, { recursive: true });
+      } catch (error) {
+        console.error('Error creating directory:', error);
       }
-      return encodeURIComponent(fileName);
-    },
-    overwrite: true,
-    invalidate: true,
-    transformation: [{ quality: 'auto:eco' }, { width: 1920, crop: 'scale' }],
+    }
+    
+    cb(null, destName);
+  },
+  filename: (req, file, cb) => {
+    const type = file.mimetype.split('/');
+    const fileExt = type[type.length - 1];
+
+    let fileName = '';
+    
+    if (file.fieldname === 'banner') {
+      fileName = 'eventBanner' + `@${Date.now()}`;
+    } else if (file.fieldname === 'participants' || file.fieldname === 'CA') {
+      let { fullName, name } = req.body;
+
+      if (fullName) {
+        fullName = fullName.trim();
+        fileName = fullName.split(' ')[0].toLowerCase() + `@${Date.now()}`;
+        req.userName = fileName;
+      } else if (name) {
+        fileName = name;
+      } else {
+        return cb(new BadRequestError('fullName should be provided'));
+      }
+    } else if (file.fieldname === 'event') {
+      fileName = req.body.name.split(' ').join('') + `@${Date.now()}`;
+    } else {
+      fileName = file.fieldname + `-${Date.now()}`;
+    }
+    
+    // Sanitize filename
+    fileName = fileName.replace(/[^a-zA-Z0-9@_-]/g, '');
+    
+    cb(null, fileName + '.' + fileExt);
   },
 });
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 }, // Increased to 10MB
   fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png/;
+    const fileTypes = /jpeg|jpg|png|gif|webp/;
     const mimeType = fileTypes.test(file.mimetype);
     const validFields = /participants|CA|banner|gallery|thumbnail|event|sponsor/;
     const isFieldValid = validFields.test(file.fieldname);
 
     if (!isFieldValid) {
-      cb(new Error(`Field name didn't match`));
+      return cb(new Error(`Field name didn't match`));
     }
 
     if (mimeType) {
       return cb(null, true);
     } else {
-      cb(new BadRequestError('only jpg,png,jpeg is allowed!'));
+      return cb(new BadRequestError('Only jpg, png, jpeg, gif, webp images are allowed!'));
     }
-
-    cb(new Error('there was an unknown error'));
   },
 });
 

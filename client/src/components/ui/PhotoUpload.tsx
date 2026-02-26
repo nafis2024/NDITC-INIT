@@ -1,79 +1,83 @@
-"use client";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { CgAlbum } from "react-icons/cg";
-import { FiUser } from "react-icons/fi";
+import React from 'react';
 
-const PhotoUpload = ({
-  name,
-  type,
-  defaultImage,
-  divClass,
-  currentPhoto,
-  setCurrentPhoto,
-}: {
+interface PhotoUploadProps {
   name: string;
-  type: "PFP" | "IMG";
+  type: 'PFP' | 'IMG';
   defaultImage?: string;
   divClass?: string;
   currentPhoto: string | null;
-  setCurrentPhoto: (s: string) => void;
-}) => {
-  const pfpRef = useRef<HTMLInputElement>(null);
+  setCurrentPhoto: (s: string | null) => void;
+  required?: boolean;
+}
 
-  useLayoutEffect(() => {
-    if (defaultImage) {
-      setCurrentPhoto(defaultImage);
+const PhotoUpload: React.FC<PhotoUploadProps> = ({
+  name,
+  type,
+  defaultImage,
+  divClass = '',
+  currentPhoto,
+  setCurrentPhoto,
+  required = false,
+}) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCurrentPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }, [defaultImage]);
-  const pfpClass =
-    type === "PFP"
-      ? "mb-2 h-[80px] w-[80px] rounded-full bg-black"
-      : "mb-2 max-h-[180px] w-full max-w-[300px] rounded-xl bg-black";
+  };
 
   return (
-    <div
-      className={
-        "row-start-1 mx-1 md:col-span-2 md:row-span-2 lg:col-span-1 " + divClass
-      }
-    >
-      <input
-        className="h-full w-full"
-        type="file"
-        accept="image/png, image/jpeg"
-        hidden
-        ref={pfpRef}
-        onChange={(e) => {
-          if (e.target.files) {
-            if (e.target.files.length > 0) {
-              setCurrentPhoto(URL.createObjectURL(e.target.files[0]));
-            }
-          }
-        }}
-        name={name}
-      />
-      <button
-        type="button"
-        onClick={() => {
-          if (pfpRef && pfpRef.current) {
-            pfpRef.current.click();
-          }
-        }}
-        className="border-primary flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-secondary-200/50 bg-gradient-to-r from-secondary-700 to-secondary-600 p-5 text-center text-sm hover:border-primary-200 hover:from-secondary-700 hover:to-secondary-500/50"
-      >
-        {currentPhoto ? (
-          <img src={currentPhoto} className={pfpClass} alt="" />
-        ) : (
-          <>
-            {type === "PFP" ? (
-              <FiUser className="h-9 w-9 text-primary-150" />
-            ) : (
-              <CgAlbum className="h-9 w-9 text-primary-150" />
-            )}
-          </>
-        )}
-        <p>Upload {type === "PFP" && "Profile"} Picture</p>
-        <p className="text-white/50">JPG/PNG, 5 MB</p>
-      </button>
+    <div className={`space-y-2 ${divClass}`}>
+      <label className="block text-sm font-medium text-gray-300">
+        {type === 'PFP' ? 'Profile Picture' : 'Image'}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+      
+      <div className="flex items-center space-x-4">
+        {/* Preview */}
+        <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-700">
+          {currentPhoto ? (
+            <img
+              src={currentPhoto}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          ) : defaultImage ? (
+            <img
+              src={defaultImage}
+              alt="Default"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              No image
+            </div>
+          )}
+        </div>
+
+        {/* Upload Button */}
+        <div>
+          <input
+            type="file"
+            id={name}
+            name={name}
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+            required={required && !currentPhoto && !defaultImage}
+          />
+          <label
+            htmlFor={name}
+            className="cursor-pointer bg-secondary-600 hover:bg-secondary-700 text-white py-2 px-4 rounded-md transition-colors"
+          >
+            Choose Image
+          </label>
+        </div>
+      </div>
     </div>
   );
 };

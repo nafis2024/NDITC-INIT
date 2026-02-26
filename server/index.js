@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('express-async-errors');
+const path = require('path');
 const express = require('express');
 const app = express();
 const db = require('./models');
@@ -38,6 +39,9 @@ const corOptions = {
   credentials: true,
 };
 app.use(cors(corOptions));
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 //middlewares

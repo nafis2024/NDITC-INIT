@@ -1,9 +1,8 @@
 import fetchJSON from "@/api/fetchJSON";
-import reqs from "@/api/requests";
+import reqs, { reqImgWrapper } from "@/api/requests";
 import Input from "@/components/ui/form/Input";
 import ImageContext from "@/context/StateContext";
 import useForm from "@/hooks/useForm";
-
 import React, { useContext } from "react";
 
 const EditPhotoForm = () => {
@@ -12,24 +11,33 @@ const EditPhotoForm = () => {
   const [form, formLoading] = useForm(
     {
       handler: async (data) => {
+        // Ensure numeric values are properly parsed
+        const payload = {
+          id: data.id,
+          rows: parseInt(data.rows) || 1,
+          cols: parseInt(data.cols) || 1,
+          order: parseInt(data.order) || 0,
+        };
+        
         const res = await fetchJSON(
           reqs.UPDATE_GALLERY_IMG + data?.id,
           {
             method: "PATCH",
             credentials: "include",
           },
-          data,
+          payload,
         );
 
         return res;
       },
-      successMsg: "You successfully edited the Picture!",
-      onSuccess(resp) {
+      successMsg: "Image updated successfully!",
+      onSuccess() {
         dispatch({ type: "EDIT", state: false, data: null });
       },
     },
     [imgState?.data],
   );
+
   return (
     <div className="bg-opacity-200 w-full max-w-[550px] rounded-2xl bg-secondary-700/80 to-gray-900 p-6 shadow-lg">
       <form className="space-y-6" ref={form}>
@@ -39,26 +47,41 @@ const EditPhotoForm = () => {
 
         <div className="space-y-4">
           <Input name="id" value={imgState?.data?.id} hidden />
+          
+          {/* Image Preview */}
+          {imgState?.data?.BigImage && (
+            <div className="mb-4">
+              <img 
+                src={reqImgWrapper(imgState.data.BigImage) || ''} 
+                alt="Current" 
+                className="max-h-48 rounded-lg object-cover mx-auto"
+              />
+            </div>
+          )}
+          
           <Input
             type="number"
             label="Rows"
             name="rows"
-            defaultValue={imgState?.data?.rows || ""}
-            autoFocus
+            defaultValue={imgState?.data?.rows || 1}
+            min="1"
+            required
           />
           <Input
             type="number"
             label="Cols"
             name="cols"
-            defaultValue={imgState?.data?.cols || ""}
-            autoFocus
+            defaultValue={imgState?.data?.cols || 1}
+            min="1"
+            required
           />
           <Input
             type="number"
-            label="Order Start"
+            label="Order"
             name="order"
-            defaultValue={imgState?.data?.order || ""}
-            autoFocus
+            defaultValue={imgState?.data?.order || 0}
+            min="0"
+            required
           />
         </div>
 
@@ -74,9 +97,10 @@ const EditPhotoForm = () => {
           </button>
           <button
             type="submit"
-            className="rounded-full bg-secondary-500 px-6 py-2 text-white hover:bg-primary-400 focus:outline-none"
+            disabled={formLoading}
+            className="rounded-full bg-secondary-500 px-6 py-2 text-white hover:bg-primary-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Done
+            {formLoading ? "Updating..." : "Update"}
           </button>
         </div>
       </form>

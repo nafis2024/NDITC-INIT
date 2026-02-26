@@ -1,18 +1,27 @@
 // const so = 'https://eventapi.nditc.net';
 export const so = process.env.NEXT_PUBLIC_API;
 
+// Add local server URL for static files
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:5000';
+
 export const reqImgWrapper = (src: any) => {
   if (!src) return null;
-  let prefix =
-    "https://res.cloudinary.com/dxvw2ccph/image/upload/v1741932775/init";
-
-  if (src.startsWith("https://")) return src;
-
-  return (
-    "https://res.cloudinary.com/dxvw2ccph/image/upload/v1741932775/init" +
-    "/" +
-    src
-  );
+  
+  // If it's already a full URL (including Cloudinary), return as is
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    return src;
+  }
+  
+  // For local server paths, clean up the path and construct URL
+  // Remove any leading slashes and 'uploads/' if present to avoid duplication
+  let cleanPath = src.replace(/^\/+/, '');
+  
+  // If the path already starts with 'uploads/', use it as is, otherwise add 'uploads/'
+  if (!cleanPath.startsWith('uploads/')) {
+    cleanPath = `uploads/${cleanPath}`;
+  }
+  
+  return `${SERVER_URL}/${cleanPath}`;
 };
 
 const reqs = {

@@ -1,13 +1,11 @@
 import fetchJSON from "@/api/fetchJSON";
 import reqs from "@/api/requests";
 import Input from "@/components/ui/form/Input";
-import TextArea from "@/components/ui/form/Textarea";
 import Loading from "@/components/ui/LoadingWhite";
 import PhotoUpload from "@/components/ui/PhotoUpload";
 import ImageContext from "@/context/StateContext";
 import useForm from "@/hooks/useForm";
-import React, { useContext, useRef, useState } from "react";
-import { CgAlbum } from "react-icons/cg";
+import React, { useContext, useState } from "react";
 
 const AddPhotosForm = () => {
   const [, dispatch] = useContext(ImageContext) || [, () => {}];
@@ -15,6 +13,13 @@ const AddPhotosForm = () => {
 
   const [form, formLoading] = useForm({
     handler: async (data, formData) => {
+      // Ensure numeric values are properly converted
+      if (formData) {
+        formData.set('rows', String(parseInt(data.rows) || 1));
+        formData.set('cols', String(parseInt(data.cols) || 1));
+        formData.set('order', String(parseInt(data.order) || 0));
+      }
+      
       const res = await fetchJSON(
         reqs.ADD_GALLERY_IMG,
         {
@@ -27,11 +32,10 @@ const AddPhotosForm = () => {
 
       return res;
     },
-    successMsg: "You successfully edited Picture!",
+    successMsg: "Image uploaded successfully!",
     formData: true,
-    onSuccess(resp) {
+    onSuccess() {
       setCurrentPhoto(null);
-
       dispatch({ type: "ADD", state: false });
     },
   });
@@ -44,9 +48,30 @@ const AddPhotosForm = () => {
         </h2>
 
         <div className="space-y-4">
-          <Input type="number" label="Rows" name="rows" />
-          <Input type="number" label="Cols" name="cols" />
-          <Input type="number" label="Order Start" name="order" />
+          <Input 
+            type="number" 
+            label="Rows" 
+            name="rows" 
+            defaultValue="1"
+            min="1"
+            required
+          />
+          <Input 
+            type="number" 
+            label="Cols" 
+            name="cols" 
+            defaultValue="1"
+            min="1"
+            required
+          />
+          <Input 
+            type="number" 
+            label="Order" 
+            name="order" 
+            defaultValue="0"
+            min="0"
+            required
+          />
         </div>
 
         <PhotoUpload
@@ -68,7 +93,8 @@ const AddPhotosForm = () => {
           </button>
           <button
             type="submit"
-            className="rounded-full bg-secondary-500 px-6 py-2 text-white hover:bg-primary-400 focus:outline-none"
+            disabled={formLoading}
+            className="rounded-full bg-secondary-500 px-6 py-2 text-white hover:bg-primary-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {formLoading ? <Loading /> : "Submit"}
           </button>

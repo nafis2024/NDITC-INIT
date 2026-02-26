@@ -8,7 +8,7 @@ import {
   FaExternalLinkAlt,
   FaTrash,
 } from "react-icons/fa";
-import EditPhotoForm from "../Gallery/EditPhotoFor";
+import EditPhotoForm from "../Gallery/EditPhotoForm";
 import UserDataModal from "./UserDataModal";
 import reqs, { reqImgWrapper } from "@/api/requests";
 import { method } from "lodash";
