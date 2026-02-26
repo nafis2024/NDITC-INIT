@@ -41,7 +41,23 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null,
     },
-  })
+    // New column to link CA
+    CAId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'cas',
+        key: 'id',
+      },
+    },
+  });
 
-  return ParEvents
-}
+  ParEvents.associate = (models) => {
+    ParEvents.belongsTo(models.CAs, {
+      foreignKey: 'CAId',
+      as: 'CA',
+    });
+  };
+
+  return ParEvents;
+};

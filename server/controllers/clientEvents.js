@@ -8,6 +8,15 @@ const increaseCA = require('../utils/increaseCA');
 
 require('express-async-errors');
 
+const CA = await CAs.findOne({ where: { code: caCode } });
+if (CA) {
+  await CAs.increment(
+    { totalPoints: 10, referralCount: 1 },
+    { where: { id: CA.id } }
+  );
+  newParEvent.CAId = CA.id; // link participant to CA
+}
+
 const findEvent = async (mode, eventName) => {
   if (mode !== 'par')
     throw new UnauthenticatedError(

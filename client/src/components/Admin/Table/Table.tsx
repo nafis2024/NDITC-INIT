@@ -132,7 +132,7 @@ const TableRow = ({
         <td className="min-w-[150px] max-w-[250px] shrink-0 px-4 py-2">
           <div className="flex items-center gap-3">
             <span className="rounded-full border-2 border-primary-150 p-1 text-sm font-bold">
-              {rowData.used}
+              {rowData.totalPoints - rowData.redeemedPoints}
             </span>
             <SwitchCheckbox
               id="blocked"

@@ -8,9 +8,17 @@ module.exports = (sequelize, DataTypes) => {
     blocked: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
+    },
+    totalPoints: {
+      type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    used: {
+    redeemedPoints: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    referralCount: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
@@ -70,10 +78,10 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   CAs.associate = (models) => {
-    CAs.hasOne(models.ParEvents, {
+    CAs.hasMany(models.ParEvents, {
       foreignKey: 'CAId',
+      as: 'ParEvents',
       onDelete: 'CASCADE',
-      as: 'ParEvent',
     });
   };
 
