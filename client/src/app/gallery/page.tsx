@@ -2,6 +2,7 @@ import ExtendedColors from "../../../color.config";
 import { Spotlight } from "../../components/ui/Spotlight/Spotlight";
 import reqs from "@/api/requests";
 import ImagesCont from "@/components/Gallery/ImagesCont";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import "@/styles/gallery.css";
 
 const page = async () => {
@@ -22,11 +23,18 @@ const page = async () => {
           fill={ExtendedColors.primary["200"]}
         />
         <section className="mt-36 flex w-[90%] flex-col items-center justify-evenly xl:mt-0 xl:flex-row">
-          <img
-            className="mb-20 hidden h-[481px] w-80 rounded-xl xl:block"
-            src="https://res.cloudinary.com/dxvw2ccph/image/upload/v1741967876/init/uploads/gallery/gallery-1741967874812.jpg"
-            alt=""
-          />
+          {/* Use OptimizedImage for hero images */}
+          <div className="mb-20 hidden h-[481px] w-80 rounded-xl xl:block">
+            <OptimizedImage
+              src="https://res.cloudinary.com/dxvw2ccph/image/upload/v1741967876/init/uploads/gallery/gallery-1741967874812.jpg"
+              alt="Gallery hero left"
+              width={320}
+              height={481}
+              priority={true}
+              className="rounded-xl w-full h-full object-cover"
+            />
+          </div>
+          
           <h1 className="Inter GradText xl:mb-02xl:text-8xl mb-10 text-center text-5xl font-extrabold md:text-7xl">
             OUR
             <br />
@@ -34,21 +42,34 @@ const page = async () => {
             <br />
             JOURNEY
           </h1>
-          <img
-            className="mt-20 hidden h-[481px] w-80 flex-wrap rounded-xl xl:block"
-            src="https://res.cloudinary.com/dxvw2ccph/image/upload/v1741967824/init/uploads/gallery/gallery-1741967823665.jpg"
-            alt=""
-          />
-          <div className="mb-20 flex w-full justify-evenly xl:hidden">
-            <img
-              className="h-[250px] w-40 rounded-xl md:h-[481px] md:w-80"
-              src="https://scontent.fdac155-1.fna.fbcdn.net/v/t39.30808-6/444483006_1098666241651573_800566798330672681_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=MR-hIk7ya20Q7kNvgGUkP9_&_nc_ht=scontent.fdac155-1.fna&oh=00_AYBixcAmTlTfvVRnt5oAD4ME9vbAuhmT783YiMOHozwphQ&oe=66B9167A"
-              alt=""
+          
+          <div className="mb-20 hidden h-[481px] w-80 rounded-xl xl:block">
+            <OptimizedImage
+              src="https://res.cloudinary.com/dxvw2ccph/image/upload/v1741967824/init/uploads/gallery/gallery-1741967823665.jpg"
+              alt="Gallery hero right"
+              width={320}
+              height={481}
+              priority={true}
+              className="rounded-xl w-full h-full object-cover"
             />
-            <img
-              className="mt-10 h-[241px] w-40 rounded-xl md:h-[481px] md:w-80"
+          </div>
+          
+          <div className="mb-20 flex w-full justify-evenly xl:hidden">
+            <OptimizedImage
+              src="https://scontent.fdac155-1.fna.fbcdn.net/v/t39.30808-6/444483006_1098666241651573_800566798330672681_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=MR-hIk7ya20Q7kNvgGUkP9_&_nc_ht=scontent.fdac155-1.fna&oh=00_AYBixcAmTlTfvVRnt5oAD4ME9vbAuhmT783YiMOHozwphQ&oe=66B9167A"
+              alt="Mobile gallery 1"
+              width={160}
+              height={250}
+              priority={true}
+              className="h-[250px] w-40 rounded-xl object-cover md:h-[481px] md:w-80"
+            />
+            <OptimizedImage
               src="https://scontent.fdac155-1.fna.fbcdn.net/v/t39.30808-6/441582958_1098667051651492_4716625926671468195_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=ga0fdA4sbUcQ7kNvgGm90Jt&_nc_ht=scontent.fdac155-1.fna&oh=00_AYD9zl4PsZECegwcDwMgHintg8WX4MkCOZ9L-obwQhRxmw&oe=66B90B4E"
-              alt=""
+              alt="Mobile gallery 2"
+              width={160}
+              height={241}
+              priority={true}
+              className="mt-10 h-[241px] w-40 rounded-xl object-cover md:h-[481px] md:w-80"
             />
           </div>
         </section>

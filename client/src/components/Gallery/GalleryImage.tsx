@@ -1,6 +1,7 @@
 "use client";
 
 import { reqImgWrapper } from "@/api/requests";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 const GalleryImage = ({
   item,
@@ -11,15 +12,20 @@ const GalleryImage = ({
   keyVal: number;
   openModal: () => void;
 }) => {
+  const imageUrl = reqImgWrapper(item.BigImage)?.toString() || '';
+
   return (
-    <figure className={`image-${keyVal}`} onClick={openModal}>
+    <figure className={`image-${keyVal} cursor-pointer relative group`} onClick={openModal}>
       <a data-featherlight="image">
-        <img
-          alt=""
-          loading="lazy"
-          src={reqImgWrapper(item.BigImage)?.toString()}
+        <OptimizedImage
+          src={imageUrl}
+          alt={`Gallery image ${keyVal}`}
+          className="w-full h-full object-cover rounded-lg"
+          width={400}
+          height={300}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          figcaption={`Image ${keyVal}`}
         />
-        <figcaption>{`Image ${keyVal}`}</figcaption>
       </a>
     </figure>
   );
