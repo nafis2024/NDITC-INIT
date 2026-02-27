@@ -20,7 +20,46 @@ const registration = async (req, res) => {
     //   // // cmnt
     // });
   } else {
+    // Participant registration
     const newPar = await Participants.create(req.user);
+    
+    // Check if there's a CA referral code in the request
+    const caCode = req.body.CAref || req.body.caCode;
+    if (caCode) {
+      try {
+        // Find the CA by their referral code
+        const CA = await CAs.findOne({ where: { code: req.body.caCode } });
+        
+        if (CA) {
+          // Increment CA's points and referral count
+          await CAs.increment(
+            { 
+              totalPoints: 10, 
+              referralCount: 1 
+            },
+            { where: { id: CA.id } }
+          );
+          
+          // Link the participant to this CA in ParEvents
+          req.eventsRel.CAId = CA.id;
+          
+          // Also update the participant's caRef field
+          await Participants.update(
+            { caRef: req.body.caCode },
+            { where: { id: newPar.id } }
+          );
+          
+          console.log(`Participant linked to CA: ${CA.code}`);
+        } else {
+          console.log(`CA code ${req.body.caCode} not found`);
+        }
+      } catch (error) {
+        console.error('Error linking CA referral:', error);
+        // Don't throw error - participant registration should still succeed
+        // even if CA referral fails
+      }
+    }
+    
     req.eventsRel.parId = newPar.id;
     const event = await ParEvents.create(req.eventsRel);
 
@@ -34,6 +73,7 @@ const registration = async (req, res) => {
     msg: 'Congratulations!! Your registration is successful.',
   });
 };
+
 
 const login = async (req, res) => {
   let clientUser;

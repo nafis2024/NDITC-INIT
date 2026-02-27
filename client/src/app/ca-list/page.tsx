@@ -25,8 +25,8 @@ const caData: CAData[] = [
     points: 120,
   },
   {
-    name: "John Doe",
-    institution: "ABC College",
+    name: "Mohammad Nafis Fuad",
+    institution: "Notre Dame College",
     class: "12",
     caCode: "CA67890",
     points: 95,

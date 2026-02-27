@@ -46,8 +46,10 @@ const Register = () => {
       } else if (!data?.agreed) {
         throw new Error("You haven't agreed to terms and conditions.");
       } else {
+        // CA Reference is optional, so no validation needed
+        // The field is already in formData as 'CAref'
+        
         const response = await register(formData);
-
         return response;
       }
     },
@@ -138,7 +140,7 @@ const Register = () => {
               name="phone"
               id="number"
               placeholder="01........."
-              type="number"
+              type="tel" // Changed from "number" to "tel" for better mobile input
               divClass="md:col-span-2"
               required
             />
@@ -166,16 +168,16 @@ const Register = () => {
               name="fb"
               id="fb"
               placeholder="Facebook Link"
-              type="text"
+              type="url" // Changed to "url" type
               divClass="md:col-span-2"
               required
             />
 
             <Input
-              label="CA Reference"
+              label="CA Reference Code"
               name="CAref"
               id="ca"
-              placeholder="CA Reference"
+              placeholder="Enter CA Code (Optional)"
               type="text"
               divClass="md:col-span-2"
             />
@@ -215,7 +217,7 @@ const Register = () => {
           <div className="mt-4 flex flex-col-reverse items-center justify-center gap-6 text-right md:flex-row md:justify-end">
             <div className="Nunito ml-1.5 text-center text-sm tracking-wide text-white">
               <p>
-                ALREADY&apos;T REGISTERED?{" "}
+                ALREADY REGISTERED?{" "}
                 <Link
                   href="/login"
                   className="text-primary-350 hover:underline"
@@ -226,10 +228,10 @@ const Register = () => {
             </div>
             <button
               type="submit"
-              disabled={false}
+              disabled={loading}
               className={
                 "btn-prim Bebas inline-flex items-center gap-1 py-2.5 pr-8 text-center text-xl tracking-wide " +
-                (0 ? "pl-6" : "pl-8")
+                (loading ? "pl-6" : "pl-8")
               }
             >
               {loading ? <Loading scale={0.6} /> : null}

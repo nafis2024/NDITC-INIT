@@ -8,6 +8,7 @@ const increaseCA = require('../utils/increaseCA');
 
 require('express-async-errors');
 
+{/** CAUSING SERVER TO FAIL
 const CA = await CAs.findOne({ where: { code: caCode } });
 if (CA) {
   await CAs.increment(
@@ -15,7 +16,9 @@ if (CA) {
     { where: { id: CA.id } }
   );
   newParEvent.CAId = CA.id; // link participant to CA
-}
+}  
+  
+*/}
 
 const findEvent = async (mode, eventName) => {
   if (mode !== 'par')
